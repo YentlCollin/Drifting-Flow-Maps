@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "drifting-flow-maps"
 version = "0.1.0"
-description = "Self-induced flow maps via drifting: WGF, self-distillation and feature-space experiments"
+description = "Self-induced flow maps via kernel-WGF and feature-space drifting"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
@@ -17,12 +17,9 @@ dependencies = [
 [project.optional-dependencies]
 test = ["pytest>=8"]
 
-[tool.setuptools]
-py-modules = ["local_paths", "toy_lagrangian_flow", "mnist_lagrangian_flow", "celeba_latent_flow", "celeba_latent_lsd", "celeba_drift_lsd_hybrid", "celeba_lsd_gmd_ramped_anchor", "celeba_lsd_gmd_d4_half_anchor", "celeba_pixel_gmd_generator_train", "celeba_pixel_gmd_mae_train", "eval_mnist_modes"]
-
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["src*", "experiments*"]
+include = ["flowmaps*", "examples*"]
 namespaces = true
 
 [tool.pytest.ini_options]

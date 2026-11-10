@@ -1,9 +1,9 @@
 """Use canonical temporary paths for secure-I/O and multiprocessing tests."""
 
 import os
-from pathlib import Path
 import sys
 import tempfile
+from pathlib import Path
 
 import pytest
 
@@ -11,7 +11,11 @@ import pytest
 @pytest.fixture(scope="session", autouse=True)
 def canonical_temporary_directory():
     # macOS /var and /tmp are symlinks; PyTorch also needs short socket paths.
-    parent = Path("/private/tmp") if sys.platform == "darwin" else Path(tempfile.gettempdir()).resolve()
+    parent = (
+        Path("/private/tmp")
+        if sys.platform == "darwin"
+        else Path(tempfile.gettempdir()).resolve()
+    )
     previous_cache = tempfile.tempdir
     previous_env = os.environ.get("TMPDIR")
     with tempfile.TemporaryDirectory(prefix="flowmap-", dir=parent) as directory:
