@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "title": "Recorded CelebA-64 one-step drifting versus diffusion comparison",
+  "record_type": "transcribed_archived_results",
+  "report_date": "2026-09-21",
+  "method": "One-step direct-RGB GMD with frozen MAE-82 and ConvNeXt-13 features",
+  "scope": "These measurements concern the one-step drifting generator; the composed Flow-GMD experiment is reported separately.",
+  "verification_scope": "Values checked against the archived Markdown reports. Training and image evaluations were not rerun for this public documentation update.",
+  "training_replicates": "One GMD training seed; no across-training-seed equivalence claim.",
+  "protocol": {
+    "dataset": "CelebA-64",
+    "reference_and_evaluator": "Within each split, the reports record matching reference, Inception and evaluator hashes, precision, generation and Inception batch sizes, quantization and metric protocol.",
+    "test_checkpoint_selection": "Both checkpoints fixed before the recorded test comparison.",
+    "training_budget": "GMD: 225000 updates; diffusion: 50000 updates. Training compute is not matched.",
+    "nfe_interpretation": "Number of model evaluations; not a measured latency ratio."
+  },
+  "sources": [
+    {
+      "report": "bilan_225k.md",
+      "sha256": "67105bbee0b7d12dfdb4795179e51f2673c7062c10d90a2cb26227b8e8e2f88b"
+    },
+    {
+      "report": "bilan_test.md",
+      "sha256": "2ea1dd5fce626f42085a8dd2b948fb59addf01f9cecfd77362a77e1a2752a7fc"
+    }
+  ],
+  "results": [
+    {
+      "split": "official_validation",
+      "model": "GMD",
+      "training_updates": 225000,
+      "weights": "ema",
+      "nfe": 1,
+      "num_real": 19867,
+      "num_generated": 19867,
+      "generation_seed": 42001,
+      "fid": 6.014797787399743,
+      "kid": 0.002151156022279208,
+      "checkpoint_sha256": "d1272406a71e0811fa217c1b568a437ad05aa0268afb19be01209295274101dc",
+      "source_report": "bilan_225k.md"
+    },
+    {
+      "split": "official_validation",
+      "model": "diffusion",
+      "training_updates": 50000,
+      "weights": "ema",
+      "nfe": 250,
+      "num_real": 19867,
+      "num_generated": 19867,
+      "generation_seed": 42001,
+      "fid": 6.0652661097751945,
+      "kid": 0.003761394735502983,
+      "checkpoint_sha256": "0f2146d9b429482c72bf6231750e2f9a1da547a64f7e9b8c819caab46582db51",
+      "source_report": "bilan_225k.md"
+    },
+    {
+      "split": "official_test",
+      "model": "GMD",
+      "training_updates": 225000,
+      "weights": "ema",
+      "nfe": 1,
+      "num_real": 19962,
+      "num_generated": 19962,
+      "generation_seed": 52001,
+      "fid": 5.808974375817627,
+      "kid": 0.0019441007213820737,
+      "checkpoint_sha256": "d1272406a71e0811fa217c1b568a437ad05aa0268afb19be01209295274101dc",
+      "source_report": "bilan_test.md"
+    },
+    {
+      "split": "official_test",
+      "model": "diffusion",
+      "training_updates": 50000,
+      "weights": "ema",
+      "nfe": 250,
+      "num_real": 19962,
+      "num_generated": 19962,
+      "generation_seed": 52001,
+      "fid": 5.779964060146085,
+      "kid": 0.003332478208170944,
+      "checkpoint_sha256": "0f2146d9b429482c72bf6231750e2f9a1da547a64f7e9b8c819caab46582db51",
+      "source_report": "bilan_test.md"
+    }
+  ]
+}

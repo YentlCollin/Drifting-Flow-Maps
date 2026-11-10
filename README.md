@@ -5,9 +5,42 @@
 I studied how drifting signals can train a reusable two-time transport map,
 `Φθ(x, a, b)`. The model produces its own intermediate states, learns local
 transitions from those states, and composes the same map at inference.
+The project also includes a one-step direct-RGB drifting generator.
 
 [Theory and objectives — PDF](docs/main.pdf) ·
 [Experiments and results — PDF](docs/rapport_celeba_clair.pdf)
+
+## Latest result: one-step drifting versus diffusion
+
+**On CelebA test, the one-step drifting generator reaches FID 5.809,
+compared with 5.780 for the diffusion reference at 250 model evaluations.**
+The validation result is FID 6.015 versus 6.065 for the same checkpoints.
+
+| Evaluation | Model | NFE | FID ↓ | KID ↓ |
+|---|---|---:|---:|---:|
+| Official validation | **GMD** | **1** | **6.014798** | **0.002151156** |
+| Official validation | Diffusion | 250 | 6.065266 | 0.003761395 |
+| Official test | **GMD** | **1** | **5.808974** | **0.001944101** |
+| Official test | Diffusion | 250 | 5.779964 | 0.003332478 |
+
+This is numerically comparable test FID, with a 0.50% gap and lower KID for GMD.
+GMD's validation FID is 0.83% lower. Both models use EMA weights and the same
+evaluation settings within each split: 19,867 images on validation and 19,962
+on test. The checkpoints were fixed for the recorded test comparison.
+
+GMD was trained for 225,000 updates and diffusion for 50,000: this is a quality
+comparison at different inference budgets, not a matched-training-compute study.
+There is one GMD training seed; numerical proximity does not establish statistical
+equivalence, and NFE does not directly measure wall-clock speed.
+
+[Full-precision measurements and protocol](results/drifting_vs_diffusion.json)
+come from the archived **21 September 2026** reports. The PDFs linked above
+cover the methodology and earlier studies.
+
+The one-step result uses the [RGB backbone](flowmaps/models/backbone.py),
+[drifting objective](flowmaps/objectives/drifting.py) and
+[frozen feature stack](flowmaps/features/combined.py).
+The two-time Flow–GMD extension below is a separate experiment.
 
 ## Start here
 
@@ -59,10 +92,34 @@ There are **two CelebA training entry points**:
 The many historical continuation and ablation trainers are omitted. Their
 results and the comparisons with Lagrangian self-distillation remain in the PDFs.
 
-## Selected results
+## Flow-map experiments
 
-The numbers below are retained from the existing reports. The two protocols
-are different and should be read separately.
+The learned two-time maps were also evaluated under the protocols below.
+These studies are separate from the one-step GMD benchmark above.
+
+### Direct-RGB Flow–GMD with local drifting
+
+The experiment report (§11.12) records a structural E10 checkpoint followed by
+50 updates at learning rate `5e-6` and local feature-GMD weight `0.005`.
+These measurements use **one training seed and three generation seeds**;
+the small deviations below describe generation variability only.
+
+| NFE | Raw-weight FID ↓ | KID ↓ |
+|---:|---:|---:|
+| 1 | 7.8012 ± 0.0008 | 0.0028401 |
+| 2 | 7.5574 ± 0.0006 | 0.0026512 |
+| 16 | 7.5499 ± 0.0010 | 0.0026416 |
+
+The paired ablation attributes most of the absolute FID improvement to the
+short low-learning-rate continuation. The local loss contributes especially
+to KID and the paired improvements at NFE 1 and 16. The full report also
+contains the LSD, anchor and unsuccessful direct-RGB comparisons.
+
+These are development experiments, not an untouched-test or state-of-the-art
+claim. More inference steps are not guaranteed to improve a learned map.
+
+<details>
+<summary>Earlier latent WGF study: three training seeds and fixed qualitative grid</summary>
 
 ### Historical latent WGF confirmation
 
@@ -88,26 +145,7 @@ mean FID. The Eulerian variant does not establish an advantage over Core C.
 Original grid, unchanged: training seed 42 and fixed sample indices 0–7.
 Generated columns share prior draws; the real reference row is unpaired.
 
-### Direct-RGB Flow–GMD with local drifting
-
-The experiment report (§11.12) records a structural E10 checkpoint followed by
-50 updates at learning rate `5e-6` and local feature-GMD weight `0.005`.
-These measurements use **one training seed and three generation seeds**;
-the small deviations below describe generation variability only.
-
-| NFE | Raw-weight FID ↓ | KID ↓ |
-|---:|---:|---:|
-| 1 | 7.8012 ± 0.0008 | 0.0028401 |
-| 2 | 7.5574 ± 0.0006 | 0.0026512 |
-| 16 | 7.5499 ± 0.0010 | 0.0026416 |
-
-The paired ablation attributes most of the absolute FID improvement to the
-short low-learning-rate continuation. The local loss contributes especially
-to KID and the paired improvements at NFE 1 and 16. The full report also
-contains the LSD, anchor and unsuccessful direct-RGB comparisons.
-
-These are development experiments, not an untouched-test or state-of-the-art
-claim. More inference steps are not guaranteed to improve a learned map.
+</details>
 
 ## Run
 
